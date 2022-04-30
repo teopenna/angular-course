@@ -37,9 +37,7 @@
               [ngModel]="defaultSubscription"
               ngModel
               #subscription="ngModel">
-              <option value="basic">Basic</option>
-              <option value="advanced">Advanced</option>
-              <option value="pro">Pro</option>
+              <option *ngFor="let subscription of subscriptions" [value]="subscription">{{subscription}}</option>
             </select>
           </div>
           <span *ngIf="!subscription.valid && subscription.touched" class="help-block">Subscription is invalid!</span>

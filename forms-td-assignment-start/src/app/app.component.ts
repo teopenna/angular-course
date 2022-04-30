@@ -9,7 +9,8 @@ import { NgForm } from '@angular/forms';
 })
 export class AppComponent {
   @ViewChild('f') submitForm: NgForm;
-  defaultSubscription = 'advanced';
+  subscriptions = ['Basic', 'Advanced', 'Pro'];
+  defaultSubscription = 'Advanced';
 
   onSubmit() {
     //console.log(this.submitForm);
