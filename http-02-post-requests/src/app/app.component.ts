@@ -1,7 +1,6 @@
 import { Component, OnInit } from "@angular/core";
-import { HttpClient } from "@angular/common/http";
-import { map } from "rxjs/operators";
 import { Post } from "./post.model";
+import { PostsService } from "./posts.service";
 
 @Component({
   selector: "app-root",
@@ -9,9 +8,10 @@ import { Post } from "./post.model";
   styleUrls: ["./app.component.css"],
 })
 export class AppComponent implements OnInit {
-  loadedPosts = [];
+  loadedPosts: Post[] = [];
+  isFetching = false;
 
-  constructor(private http: HttpClient) {}
+  constructor(private postsService: PostsService) {}
 
   ngOnInit() {
     this.fetchPosts();
@@ -19,14 +19,7 @@ export class AppComponent implements OnInit {
 
   onCreatePost(postData: Post) {
     // Send Http request
-    this.http
-      .post<{ name: string }>(
-        "https://angular-course-eadcb-default-rtdb.europe-west1.firebasedatabase.app/posts.json",
-        postData
-      )
-      .subscribe((responseData) => {
-        console.log(responseData);
-      });
+    this.postsService.createAndStorePost(postData.title, postData.content);
   }
 
   onFetchPosts() {
@@ -36,24 +29,16 @@ export class AppComponent implements OnInit {
 
   onClearPosts() {
     // Send Http request
+    this.postsService.deletePosts().subscribe(() => {
+      this.fetchPosts();
+    });
   }
 
   private fetchPosts() {
-    this.http
-      .get<{ [key: string]: Post }>(
-        "https://angular-course-eadcb-default-rtdb.europe-west1.firebasedatabase.app/posts.json"
-      )
-      .pipe(
-        map((responseData) => {
-          const postArray: Post[] = [];
-          for (const key in responseData) {
-            if (responseData.hasOwnProperty(key)) {
-              postArray.push({ ...responseData[key], id: key });
-            }
-          }
-          return postArray;
-        })
-      )
-      .subscribe((posts) => (this.loadedPosts = posts));
+    this.isFetching = true;
+    this.postsService.fetchPosts().subscribe((posts) => {
+      this.isFetching = false;
+      this.loadedPosts = posts;
+    });
   }
 }
