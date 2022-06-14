@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders } from "@angular/common/http";
+import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Subject, throwError } from "rxjs";
 import { catchError, map } from "rxjs/operators";
@@ -30,6 +30,9 @@ export class PostsService {
   }
 
   fetchPosts() {
+    let httpParams = new HttpParams();
+    httpParams = httpParams.append("print", "pretty");
+    httpParams = httpParams.append("custom", "key");
     return this.http
       .get<{ [key: string]: Post }>(
         "https://angular-course-eadcb-default-rtdb.europe-west1.firebasedatabase.app/posts.json",
@@ -37,6 +40,7 @@ export class PostsService {
           headers: new HttpHeaders({
             "Custom-Header": "Hello",
           }),
+          params: httpParams,
         }
       )
       .pipe(
